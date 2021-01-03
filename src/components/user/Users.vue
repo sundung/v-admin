@@ -32,8 +32,46 @@
             <el-switch v-model="scope.row.mg_state"> </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作"></el-table-column>
+        <el-table-column label="操作" width="180px">
+          <template>
+            <!-- slot-scope="scope" -->
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-edit"
+            ></el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+            ></el-button>
+            <el-tooltip
+              :enterable="false"
+              class="item"
+              effect="dark"
+              content="分配权限"
+              placement="top"
+            >
+              <el-button
+                size="mini"
+                type="warning"
+                icon="el-icon-setting"
+              ></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
+      <!-- 分区区域 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="queryInfo.pagenum"
+        :page-sizes="[2, 4, 5, 10]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next"
+        :total="total"
+      >
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -43,9 +81,12 @@ export default {
   data() {
     return {
       queryInfo: {
+        // 查询条件
         query: '',
+        // 当前显示页数
         pagenum: 1,
-        pagesize: 4
+        // 每页显示的条数
+        pagesize: 2
       },
       // 用户列表
       usersList: [],
@@ -68,6 +109,18 @@ export default {
       this.usersList = res.data.users
       this.total = res.data.total
       console.log(res)
+    },
+    // 监听pageSize 改变事件
+    handleSizeChange(newSize) {
+      console.log(newSize)
+      this.queryInfo.pagesize = newSize
+      this.getUsersList()
+    },
+    // 监听页码值的改变事件
+    handleCurrentChange(newPage) {
+      console.log(newPage)
+      this.queryInfo.pagenum = newPage
+      this.getUsersList()
     }
   }
 }
