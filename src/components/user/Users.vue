@@ -29,7 +29,11 @@
         <el-table-column label="状态" prop="mg_state">
           <template slot-scope="scope">
             <!-- {{ scope.row }} -->
-            <el-switch v-model="scope.row.mg_state"> </el-switch>
+            <el-switch
+              v-model="scope.row.mg_state"
+              @change="userStateChanged(scope.row)"
+            >
+            </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -108,7 +112,6 @@ export default {
       }
       this.usersList = res.data.users
       this.total = res.data.total
-      console.log(res)
     },
     // 监听pageSize 改变事件
     handleSizeChange(newSize) {
@@ -121,6 +124,20 @@ export default {
       console.log(newPage)
       this.queryInfo.pagenum = newPage
       this.getUsersList()
+    },
+    // 监听用户状态的改变
+    async userStateChanged(state) {
+      // console.log(state)
+      // 发起网络请求
+      const { data: res } = await this.$http.put(
+        `users/${state.id}/state/${state.mg_state}`
+      )
+      // 判断
+      if (res.meta.status !== 200) {
+        // 修改失败,将页面的用户状态重置回去
+        state.mg_state = !state.mg_state
+        return this.$message.error('修改用户状态失败')
+      }
     }
   }
 }
