@@ -11,8 +11,18 @@
       <!-- 搜索框 -->
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-input placeholder="请输入内容" class="input-with-select">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input
+            v-model="queryInfo.query"
+            placeholder="请输入内容"
+            class="input-with-select"
+            clearable
+            @clear="getUsersList"
+          >
+            <el-button
+              @click="getUsersList"
+              slot="append"
+              icon="el-icon-search"
+            ></el-button>
           </el-input>
         </el-col>
         <el-col :span="6">
@@ -115,13 +125,11 @@ export default {
     },
     // 监听pageSize 改变事件
     handleSizeChange(newSize) {
-      console.log(newSize)
       this.queryInfo.pagesize = newSize
       this.getUsersList()
     },
     // 监听页码值的改变事件
     handleCurrentChange(newPage) {
-      console.log(newPage)
       this.queryInfo.pagenum = newPage
       this.getUsersList()
     },
