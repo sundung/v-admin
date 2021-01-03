@@ -12,7 +12,7 @@
         <!-- 折叠按钮 -->
         <div class="toggle-button" @click="toggleCollapse">|||</div>
         <el-menu
-          default-active="2"
+          :default-active="activePath"
           class="el-menu-vertical-demo"
           background-color="#2d3f55"
           text-color="#fff"
@@ -38,6 +38,7 @@
               :index="'/' + subItem.path"
               v-for="subItem in item.children"
               :key="subItem.id"
+              @click="saveNavState('/' + subItem.path)"
             >
               <template slot="title">
                 <i class="el-icon-menu"></i>
@@ -71,11 +72,16 @@ export default {
         145: 'el-icon-s-opportunity'
       },
       // 控制 菜单栏的折叠与展开
-      isCollaspe: false
+      isCollaspe: false,
+      // 控制菜单栏高亮显示
+      activePath: ''
     }
   },
   created() {
+    // 获取所有菜单
     this.getMenuList()
+    // 获取高亮菜单项
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     // 退出操作
@@ -95,6 +101,11 @@ export default {
     // 点击折叠按钮,控制菜单的折叠与展开
     toggleCollapse() {
       this.isCollaspe = !this.isCollaspe
+    },
+    // 点击二级菜单获取其菜单的 path 用作 菜单高亮
+    saveNavState(activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   },
   watch: {}
