@@ -26,7 +26,7 @@
           </el-input>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" @click="addUsersDialog">添加用户</el-button>
         </el-col>
       </el-row>
       <!-- table区域 -->
@@ -87,12 +87,64 @@
       >
       </el-pagination>
     </el-card>
+    <!-- 点击添加用户的对话框 -->
+    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="60%">
+      <!-- 内容主体区域 -->
+      <el-form
+        :model="addUsersRuleForm"
+        status-icon
+        :rules="addUsersRules"
+        ref="ruleForm"
+        label-width="70px"
+      >
+        <!-- 用户名 -->
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="addUsersRuleForm.username"></el-input>
+        </el-form-item>
+        <!-- 密码 -->
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="addUsersRuleForm.password"></el-input>
+        </el-form-item>
+        <!-- 邮箱 -->
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="addUsersRuleForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="addUsersRuleForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addDialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
   data() {
+    // 自定义邮箱验证规则
+    var checkEmail = (rules, value, cb) => {
+      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+      if (regEmail.test(value)) {
+        // 合法邮箱
+        return cb()
+      }
+      cb(new Error('邮箱不合法'))
+    }
+    // 自定义手机号校验规则
+    var checkMobile = (rules, value, cb) => {
+      const regMobile = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (regMobile.test(value)) {
+        // 合法手机号
+        return cb()
+      }
+      cb(new Error('手机号不合法'))
+    }
     return {
       queryInfo: {
         // 查询条件
@@ -105,7 +157,35 @@ export default {
       // 用户列表
       usersList: [],
       // 总页数
-      total: 0
+      total: 0,
+      // 控制添加用户的对话框显示与隐藏
+      addDialogVisible: false,
+      // 添加用户的表单数据
+      addUsersRuleForm: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 添加用户表单验证规则的对象
+      addUsersRules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 16, message: '用户名3-16位', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 16, message: '用户名6-16位', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
+      }
     }
   },
   created() {
@@ -146,6 +226,10 @@ export default {
         state.mg_state = !state.mg_state
         return this.$message.error('修改用户状态失败')
       }
+    },
+    // 点击添加用户按钮,打开对话框
+    addUsersDialog() {
+      this.addDialogVisible = true
     }
   }
 }
