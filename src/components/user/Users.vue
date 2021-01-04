@@ -47,12 +47,13 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
-          <template>
+          <template slot-scope="scope">
             <!-- slot-scope="scope" -->
             <el-button
               size="mini"
               type="primary"
               icon="el-icon-edit"
+              @click="showEidtDialog(scope.row.id)"
             ></el-button>
             <el-button
               size="mini"
@@ -124,6 +125,37 @@
         <el-button type="primary" @click="addUser">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 修改用户对话框 -->
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editDialogVisible"
+      width="60%"
+      @closed="editDialogClosed"
+    >
+      <!-- 修改用户对话框主题 -->
+      <el-form
+        :model="editForm"
+        status-icon
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUserInfo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -163,6 +195,7 @@ export default {
       total: 0,
       // 控制添加用户的对话框显示与隐藏
       addDialogVisible: false,
+
       // 添加用户的表单数据
       addUsersRuleForm: {
         username: '',
@@ -170,6 +203,7 @@ export default {
         email: '',
         mobile: ''
       },
+
       // 添加用户表单验证规则的对象
       addUsersRules: {
         username: [
@@ -180,6 +214,27 @@ export default {
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 6, max: 16, message: '用户名6-16位', trigger: 'blur' }
         ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ]
+      },
+
+      // 控制修改用户对话框显示与隐藏
+      editDialogVisible: false,
+
+      // 修改用户的表单数据
+      editForm: {
+        email: '',
+        mobile: ''
+      },
+
+      // 修改用户表单验证规则
+      editFormRules: {
         email: [
           { required: true, message: '请输入邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
@@ -255,6 +310,48 @@ export default {
         // 刷新用户列表
         this.getUsersList()
         return this.$message.success('添加用户成功')
+      })
+    },
+    // 点击修改用户按钮弹出,修改用户对话框
+    async showEidtDialog(id) {
+      this.editDialogVisible = true
+      const { data: res } = await this.$http.get(`users/${id}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取用户数据失败')
+      }
+      this.editForm = res.data
+      console.log(this.editForm)
+    },
+    // 监听 修改用户对话框关闭事件
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
+    // 点击 修改用户对话框,确定按钮 事件
+    editUserInfo() {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) {
+          // this.$message.error('修改用户信息失败')
+          return
+        }
+        // 发起网络请求
+        const { data: res } = await this.$http.put(
+          'users/' +
+            this.editForm.id +
+            {
+              email: this.editForm.email,
+              mobile: this.editForm.mobile
+            }
+        )
+        console.log(res)
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改用户信息失败')
+        }
+        // 关闭对话框
+        this.editDialogVisible = false
+        // 刷新数据列表
+        this.getUsersList()
+        // 提示对话框成功
+        this.$message.success('修改用户数据成功')
       })
     }
   }
