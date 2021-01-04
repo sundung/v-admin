@@ -274,7 +274,6 @@ export default {
     },
     // 监听用户状态的改变
     async userStateChanged(state) {
-      // console.log(state)
       // 发起网络请求
       const { data: res } = await this.$http.put(
         `users/${state.id}/state/${state.mg_state}`
@@ -341,8 +340,6 @@ export default {
             mobile: this.editForm.mobile
           }
         )
-        console.log(this.editForm)
-        console.log(res)
         if (res.meta.status !== 200) {
           return this.$message.error('修改用户信息失败')
         }
