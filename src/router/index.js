@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Welcome from '../components/Welcome.vue'
 import Users from '../components//user/Users.vue'
+import Rights from '../components//power/Rights.vue'
 import Home from '../views/Home.vue'
 
 Vue.use(VueRouter)
@@ -25,7 +26,8 @@ const routes = [
     // home 的 嵌套子路由 Welcome
     children: [
       { path: '/welcome', name: 'Welcome', component: Welcome },
-      { path: '/users', component: Users }
+      { path: '/users', component: Users },
+      { path: '/rights', component: Rights }
     ]
   }
   // {
