@@ -77,7 +77,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分区区域 -->
+      <!-- 分页区域 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"

@@ -33,7 +33,11 @@
               @click="showAddRolesDialogByID(scope.row.id)"
               >编辑</el-button
             >
-            <el-button size="mini" type="danger" icon="el-icon-delete"
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="removeRolesById(scope.row.id)"
               >删除</el-button
             >
 
@@ -202,6 +206,29 @@ export default {
         // 提示添加角色成功
         return this.$message.success('修改角色成功')
       })
+    },
+    // 点击删除按钮,删除角色
+    async removeRolesById(id) {
+      const res = await this.$confirm(
+        '此操作将永久删除该角色, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      if (res !== 'confirm') {
+        return this.$message.warning('已经取消删除角色')
+      }
+      // 发起网络请求
+      const { data: result } = await this.$http.delete('roles/' + id)
+      if (result.meta.status !== 200) {
+        return this.$message.error('删除角色失败')
+      }
+      this.$message.success('删除角色成功')
+      // 刷新用户列表
+      this.getRolesList()
     }
   }
 }
