@@ -88,13 +88,18 @@
       </el-pagination>
     </el-card>
     <!-- 点击添加用户的对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="60%">
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addDialogVisible"
+      width="60%"
+      @closed="addDialogClosed"
+    >
       <!-- 内容主体区域 -->
       <el-form
         :model="addUsersRuleForm"
         status-icon
         :rules="addUsersRules"
-        ref="ruleForm"
+        ref="addRuleFormRef"
         label-width="70px"
       >
         <!-- 用户名 -->
@@ -230,6 +235,10 @@ export default {
     // 点击添加用户按钮,打开对话框
     addUsersDialog() {
       this.addDialogVisible = true
+    },
+    // 监听,添加用户对话框关闭事件
+    addDialogClosed() {
+      this.$refs.addRuleFormRef.resetFields()
     }
   }
 }
