@@ -320,7 +320,6 @@ export default {
         return this.$message.error('获取用户数据失败')
       }
       this.editForm = res.data
-      console.log(this.editForm)
     },
     // 监听 修改用户对话框关闭事件
     editDialogClosed() {
@@ -335,13 +334,13 @@ export default {
         }
         // 发起网络请求
         const { data: res } = await this.$http.put(
-          'users/' +
-            this.editForm.id +
-            {
-              email: this.editForm.email,
-              mobile: this.editForm.mobile
-            }
+          'users/' + this.editForm.id,
+          {
+            email: this.editForm.email,
+            mobile: this.editForm.mobile
+          }
         )
+        console.log(this.editForm)
         console.log(res)
         if (res.meta.status !== 200) {
           return this.$message.error('修改用户信息失败')
