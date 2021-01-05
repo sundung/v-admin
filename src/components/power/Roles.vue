@@ -45,6 +45,7 @@
                   ></el-col>
                   <el-col :span="18">
                     <el-tag
+                      @close="removeThirdRolesById(scope.row, item2.id)"
                       closable
                       type="warning"
                       :class="[i2 === 0 ? '' : 'bdtop']"
@@ -267,6 +268,30 @@ export default {
       this.$message.success('删除角色成功')
       // 刷新用户列表
       this.getRolesList()
+    },
+    // 点击三级权限按钮删除权限
+    async removeThirdRolesById(roleId, rightID) {
+      const result = await this.$confirm(
+        '此操作将永久删除该权限, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      if (result !== 'confirm') {
+        return this.$message.warning('取消了删除权限操作')
+      }
+      const { data: res } = await this.$http.delete(
+        `roles/${roleId.id}/rights/${rightID}`
+      )
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除权限失败')
+      }
+      // 不建议 使用 this.getRolesList() 因为会重新渲染整个表格
+      // 数据返回的值中,包含了这个角色下的最新的数据,重新复制给,这个角色即可
+      roleId.children = res.data
     }
   }
 }
