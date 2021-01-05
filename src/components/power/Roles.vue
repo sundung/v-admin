@@ -19,7 +19,45 @@
       <!-- 表格区域 -->
       <el-table :data="rolesList" border stripe>
         <!-- 扩展列 -->
-        <el-table-column type="expand"></el-table-column>
+        <el-table-column type="expand">
+          <template slot-scope="scope">
+            <!-- <div>{{ scope.row }}</div> -->
+            <el-row
+              :class="['bdbottom', i === 0 ? 'bdtop' : '', 'vcenter']"
+              v-for="(item, i) in scope.row.children"
+              :key="item.id"
+            >
+              <!-- 渲染一级权限 -->
+              <el-col :span="5">
+                <el-tag>{{ item.authName }}</el-tag>
+                <i class="el-icon-caret-right"></i>
+              </el-col>
+              <!-- 二级权限 三级权限-->
+              <el-col :span="19">
+                <el-row
+                  v-for="(item1, i1) in item.children"
+                  :key="item1.id"
+                  :class="[i1 === 0 ? '' : 'bdtop', 'vcenter']"
+                >
+                  <el-col :span="6">
+                    <el-tag type="success">{{ item1.authName }}</el-tag>
+                    <i class="el-icon-caret-right"></i
+                  ></el-col>
+                  <el-col :span="18">
+                    <el-tag
+                      closable
+                      type="warning"
+                      :class="[i2 === 0 ? '' : 'bdtop']"
+                      v-for="(item2, i2) in item1.children"
+                      :key="item2.id"
+                      >{{ item2.authName }}</el-tag
+                    >
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
+          </template>
+        </el-table-column>
         <!-- 索隐列 -->
         <el-table-column type="index"></el-table-column>
         <el-table-column label="角色名称" prop="roleName"></el-table-column>
@@ -234,4 +272,20 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.el-tag {
+  margin: 7px;
+}
+// 设置 一级权限的上下边框线
+.bdtop {
+  border-top: 1px solid #eee;
+}
+.bdbottom {
+  border-bottom: 1px solid #eee;
+}
+// 设置 水平垂直居中
+.vcenter {
+  display: flex;
+  align-items: center;
+}
+</style>
