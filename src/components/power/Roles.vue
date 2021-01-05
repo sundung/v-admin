@@ -29,7 +29,11 @@
             >
               <!-- 渲染一级权限 -->
               <el-col :span="5">
-                <el-tag>{{ item.authName }}</el-tag>
+                <el-tag
+                  @close="removeThirdRolesById(scope.row, item.id)"
+                  closable
+                  >{{ item.authName }}</el-tag
+                >
                 <i class="el-icon-caret-right"></i>
               </el-col>
               <!-- 二级权限 三级权限-->
@@ -40,7 +44,12 @@
                   :class="[i1 === 0 ? '' : 'bdtop', 'vcenter']"
                 >
                   <el-col :span="6">
-                    <el-tag type="success">{{ item1.authName }}</el-tag>
+                    <el-tag
+                      type="success"
+                      @close="removeThirdRolesById(scope.row, item1.id)"
+                      closable
+                      >{{ item1.authName }}</el-tag
+                    >
                     <i class="el-icon-caret-right"></i
                   ></el-col>
                   <el-col :span="18">
