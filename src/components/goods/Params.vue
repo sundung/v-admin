@@ -414,6 +414,11 @@ export default {
     // 点击 tag 标签 展示 文本输入框
     showInput(row) {
       row.inputVisible = true
+      // 让文本框自动获取焦点
+      // this.$nextTick 的作用,就是当页面上的元素被从新渲染之后,才会调用回调中的代码
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
     }
   }
 
