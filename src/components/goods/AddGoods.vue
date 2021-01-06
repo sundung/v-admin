@@ -35,6 +35,7 @@
                label-width="100px">
         <!-- tabs区域 -->
         <el-tabs v-model="active"
+                 :before-leave="beforeTabsLeave"
                  :tab-position="'left'">
           <el-tab-pane label="基本信息"
                        name="0">
@@ -166,6 +167,14 @@ export default {
     // 商品分类,级联选择器的 change 事件
     handleCateChange() {
 
+    },
+
+    // 离开Tabs 触发的钩子 进入的tabs -> activeName , 离开的tabs -> oldActiveName
+    beforeTabsLeave(activeName, oldActiveName) {
+      if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
+        this.$message.error('请先选择商品分类')
+        return false
+      }
     }
   }
 }
