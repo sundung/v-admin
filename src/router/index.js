@@ -1,13 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+// 导入登录页面
 import Login from '../components/Login.vue'
-import Welcome from '../components/Welcome.vue'
-import Users from '../components//user/Users.vue'
-import Rights from '../components//power/Rights.vue'
-import Roles from '../components//power/Roles.vue'
-import Cate from '../components//goods/Cate.vue'
-import Params from '../components//goods/Params.vue'
+// 导入首页
 import Home from '../views/Home.vue'
+// 导入欢迎页面
+import Welcome from '../components/Welcome.vue'
+// 导入用户列表页面
+import Users from '../components//user/Users.vue'
+// 导入权限列表页面
+import Rights from '../components//power/Rights.vue'
+// 导入角色列表页面
+import Roles from '../components//power/Roles.vue'
+// 导入商品分类列表页面
+import Cate from '../components//goods/Cate.vue'
+// 导入商品管理下的分类列表页面
+import Params from '../components//goods/Params.vue'
+// 导入商品管理下的商品列表页面
+import List from '../components//goods/List.vue'
 
 Vue.use(VueRouter)
 
@@ -33,7 +43,8 @@ const routes = [
       { path: '/rights', component: Rights },
       { path: '/roles', component: Roles },
       { path: '/categories', component: Cate },
-      { path: '/params', component: Params }
+      { path: '/params', component: Params },
+      { path: '/goods', component: List }
     ]
   }
   // {
