@@ -45,9 +45,25 @@
             <!-- 展开行 -->
             <el-table-column type="expand">
               <template slot-scope="scope">
+                <!-- 循环渲染的 tag标签 -->
                 <el-tag type="primary"
+                        closable
                         v-for="item in scope.row.attr_vals"
                         :key="item.attr_id">{{item}}</el-tag>
+                <!-- 输入框 -->
+                <el-input class="input-new-tag"
+                          v-if="scope.row.inputVisible"
+                          v-model="scope.row.inputValue"
+                          ref="saveTagInput"
+                          size="small"
+                          @keyup.enter.native="handleInputConfirm"
+                          @blur="handleInputConfirm">
+                </el-input>
+                <!-- 添加按钮 -->
+                <el-button v-else
+                           class="button-new-tag"
+                           size="small"
+                           @click="showInput(scope.row)">+ New Tag</el-button>
               </template>
             </el-table-column>
             <!-- 索引行 -->
@@ -278,6 +294,10 @@ export default {
       // 获取展开行的数据,渲染到页面中
       res.data.map(item => {
         item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+        // 获取每一行的inputVisible
+        item.inputVisible = false
+        // 获取每一行的 inputValue
+        item.inputValue = ''
       })
       console.log(res.data)
       if (this.activeName === 'many') {
@@ -384,6 +404,16 @@ export default {
       }
       // 刷新列表
       this.getParamsData()
+    },
+
+    // tag标签 文本框失去焦点或按下 enter键
+    handleInputConfirm() {
+      console.log('isok')
+    },
+
+    // 点击 tag 标签 展示 文本输入框
+    showInput(row) {
+      row.inputVisible = true
     }
   }
 
@@ -402,6 +432,9 @@ export default {
   width: 60%;
 }
 .el-tag {
-  margin-left: 10px;
+  margin: 10px;
+}
+.input-new-tag {
+  width: 120px;
 }
 </style>
