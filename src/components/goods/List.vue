@@ -14,8 +14,10 @@
           <el-input v-model="queryInfo.query"
                     placeholder="请输入内容"
                     class="input-with-select"
+                    @clear="getGoodsList"
                     clearable>
             <el-button slot="append"
+                       @click="getGoodsList"
                        icon="el-icon-search"></el-button>
           </el-input>
         </el-col>
@@ -45,12 +47,13 @@
         </el-table-column>
         <el-table-column label="操作"
                          width="130px">
-          <template>
+          <template slot-scope="scope">
             <el-button type="primary"
                        size="mini"
                        icon="el-icon-edit"></el-button>
             <el-button type="danger"
                        size="mini"
+                       @click="romveById(scope.row.goods_id)"
                        icon="el-icon-delete"></el-button>
           </template>
         </el-table-column>
@@ -93,6 +96,7 @@ export default {
     this.getGoodsList()
   },
   methods: {
+    // 获取商品列表数据
     async getGoodsList() {
       const { data: res } = await this.$http.get('goods', { params: this.queryInfo })
       if (res.meta.status !== 200) {
@@ -109,6 +113,31 @@ export default {
 
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
+      this.getGoodsList()
+    },
+
+    // 点击表格中的删除按钮,触发的事件
+    async romveById(id) {
+      // 弹窗提示
+      const result = await this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (result !== 'confirm') {
+        return this.$message.error('取消了删除商品的操作')
+      }
+
+      // 发起网络请求
+      const { data: res } = await this.$http.delete('goods/' + id)
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除商品失败')
+      }
+
+      this.$message.success('删除商品成功')
+
+      // 刷新商品列表
       this.getGoodsList()
     }
   }
