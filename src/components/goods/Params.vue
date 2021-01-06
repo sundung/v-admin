@@ -407,13 +407,27 @@ export default {
     },
 
     // tag标签 文本框失去焦点或按下 enter键
-    handleInputConfirm(row) {
+    async handleInputConfirm(row) {
       // 处理input 的输入值的问题,清空不合法的输入值
       if (row.inputValue.trim().length === 0) {
         row.inputValue = ''
         row.inputVisible = false
         return
       }
+      // 输入合法的值,
+      row.attr_vals.push(row.inputValue)
+      row.inputValue = ''
+      row.inputVisible = false
+      // 发起网络请求
+      const { data: res } = await this.$http.put(`categories/${this.getThreeCascaderId}/attributes/${row.attr_id}`, {
+        attr_name: row.attr_name,
+        attr_sel: this.activeName,
+        attr_vals: row.attr_vals.join(' ')
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('新增参数失败')
+      }
+      this.$message.success('新增参数成功')
     },
 
     // 点击 tag 标签 展示 文本输入框
