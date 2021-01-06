@@ -32,7 +32,9 @@ import {
   Cascader,
   Alert,
   Tabs,
-  TabPane
+  TabPane,
+  Steps,
+  Step
 } from 'element-ui'
 
 Vue.use(Button)
@@ -67,6 +69,8 @@ Vue.use(Cascader)
 Vue.use(Alert)
 Vue.use(Tabs)
 Vue.use(TabPane)
+Vue.use(Steps)
+Vue.use(Step)
 
 // 全局挂载 message 组件
 Vue.prototype.$message = Message
