@@ -35,6 +35,7 @@
                label-width="100px">
         <!-- tabs区域 -->
         <el-tabs v-model="active"
+                 @tab-click="tabsActiveClick"
                  :before-leave="beforeTabsLeave"
                  :tab-position="'left'">
           <el-tab-pane label="基本信息"
@@ -68,7 +69,6 @@
                           prop="goods_cat">
               <!-- 级联选择器 -->
               <el-cascader v-model="addForm.goods_cat"
-                           expand-trigger="hover"
                            :options="cateList"
                            :props="cateProps"
                            @change="handleCateChange"
@@ -76,8 +76,23 @@
             </el-form-item>
 
           </el-tab-pane>
+
+          <!-- 商品参数区域 -->
           <el-tab-pane label="商品参数"
-                       name="1">商品参数</el-tab-pane>
+                       name="1">
+            <!-- 渲染 商品参数 的 checkbox 区域 -->
+            <el-form-item :label="item.attr_name"
+                          v-for="item in manyTabsData"
+                          :key="item.attr_id">
+              <!-- checkbox 区域 -->
+              <el-checkbox-group v-model="item.attr_vals">
+                <el-checkbox :label="item1"
+                             border
+                             v-for="(item1,index) in item.attr_vals"
+                             :key="index"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-tab-pane>
           <el-tab-pane label="商品属性"
                        name="2">商品属性</el-tab-pane>
           <el-tab-pane label="商品图片"
@@ -143,14 +158,27 @@ export default {
 
       // 商品分类级联选择器,所绑定的 prop属性对象
       cateProps: {
+        expandTrigger: 'hover',
         value: 'cat_id',
         label: 'cat_name',
         children: 'children'
-      }
+      },
+
+      // 动态参数数据
+      manyTabsData: []
     }
   },
   created() {
     this.getCateList()
+  },
+  computed: {
+    getThreeCateID() {
+      // 如果有三级商品分类,则返回其 ID 值,没有返回null
+      if (this.addForm.goods_cat.length === 3) {
+        return this.addForm.goods_cat[2]
+      }
+      return null
+    }
   },
   methods: {
     async getCateList() {
@@ -159,14 +187,17 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取商品分类数据失败')
       }
-      console.log(res.data)
       this.$message.success('获取商品分类数据成功')
       this.cateList = res.data
+      console.log(this.cateList)
     },
 
     // 商品分类,级联选择器的 change 事件
     handleCateChange() {
-
+      if (this.addForm.goods_cat.length !== 3) {
+        this.addForm.goods_cat = []
+        return this.$message.error('只能选择三级分类')
+      }
     },
 
     // 离开Tabs 触发的钩子 进入的tabs -> activeName , 离开的tabs -> oldActiveName
@@ -174,6 +205,29 @@ export default {
       if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
         this.$message.error('请先选择商品分类')
         return false
+      }
+    },
+
+    // 点击对应的tabs 触发的事件
+    async tabsActiveClick() {
+      //  active 为 1 证明访问的事 动态参数
+      if (this.active === '1') {
+        // 发起网络请求
+        const { data: res } = await this.$http.get(`categories/${this.getThreeCateID}/attributes`, {
+          params: { sel: 'many' }
+        })
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取商品参数失败')
+        }
+        // 处理 数据 成一个数组
+        res.data.map(item => {
+          item.attr_vals = item.attr_vals.length === 0 ? [] : item.attr_vals.split(' ')
+        })
+        // 将数据保存到 data中的 manyTabsData
+        this.manyTabsData = res.data
+        console.log(this.manyTabsData)
+
+        this.$message.success('获取商品参数成功')
       }
     }
   }
@@ -186,5 +240,11 @@ export default {
 }
 .el-step__title {
   font-size: 12px !important;
+}
+.el-cascader {
+  width: 100%;
+}
+.el-checkbox {
+  margin: 0 8px 0 0 !important;
 }
 </style>

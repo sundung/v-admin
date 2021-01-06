@@ -34,7 +34,9 @@ import {
   Tabs,
   TabPane,
   Steps,
-  Step
+  Step,
+  Checkbox,
+  CheckboxGroup
 } from 'element-ui'
 
 Vue.use(Button)
@@ -71,6 +73,8 @@ Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Steps)
 Vue.use(Step)
+Vue.use(Checkbox)
+Vue.use(CheckboxGroup)
 
 // 全局挂载 message 组件
 Vue.prototype.$message = Message
