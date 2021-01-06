@@ -56,8 +56,8 @@
                           v-model="scope.row.inputValue"
                           ref="saveTagInput"
                           size="small"
-                          @keyup.enter.native="handleInputConfirm"
-                          @blur="handleInputConfirm">
+                          @keyup.enter.native="handleInputConfirm(scope.row)"
+                          @blur="handleInputConfirm(scope.row)">
                 </el-input>
                 <!-- 添加按钮 -->
                 <el-button v-else
@@ -407,8 +407,13 @@ export default {
     },
 
     // tag标签 文本框失去焦点或按下 enter键
-    handleInputConfirm() {
-      console.log('isok')
+    handleInputConfirm(row) {
+      // 处理input 的输入值的问题,清空不合法的输入值
+      if (row.inputValue.trim().length === 0) {
+        row.inputValue = ''
+        row.inputVisible = false
+        return
+      }
     },
 
     // 点击 tag 标签 展示 文本输入框
