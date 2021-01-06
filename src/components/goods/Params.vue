@@ -49,13 +49,15 @@
             <el-table-column prop="attr_name"
                              label="参数名称"></el-table-column>
             <el-table-column label="操作">
-              <template>
+              <template slot-scope="scope">
                 <el-button type="primary"
                            icon="el-icon-edit"
-                           size='mini'>编辑</el-button>
+                           size='mini'
+                           @click="showEditDialog(scope.row.attr_id)">编辑</el-button>
                 <el-button type="danger"
                            icon="el-icon-delete"
-                           size='mini'>删除</el-button>
+                           size='mini'
+                           @click="removeParamsById(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -79,13 +81,15 @@
             <el-table-column prop="attr_name"
                              label="参数名称"></el-table-column>
             <el-table-column label="操作">
-              <template>
+              <template slot-scope="scope">
                 <el-button type="primary"
                            icon="el-icon-edit"
-                           size='mini'>编辑</el-button>
+                           size='mini'
+                           @click="showEditDialog(scope.row.attr_id)">编辑</el-button>
                 <el-button type="danger"
                            icon="el-icon-delete"
-                           size='mini'>删除</el-button>
+                           size='mini'
+                           @click="removeParamsById(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -114,6 +118,29 @@
         <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary"
                    @click="addParams">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 编辑参数对话框 -->
+    <el-dialog :title="'修改' + titleText"
+               :visible.sync="editDialogVisible"
+               @close="editDialogClosed"
+               width="60%">
+      <!-- 表单区域 -->
+      <el-form :model="editForm"
+               :rules="editFormRules"
+               ref="editFormRef"
+               label-width="100px">
+        <el-form-item :label="titleText"
+                      prop="attr_name">
+          <el-input v-model="editForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="editParams">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -156,6 +183,19 @@ export default {
 
       // 动态/静态参数 的表单的验证规则
       addFormRules: {
+        attr_name: [
+          { required: true, message: '请输入参数名称', trigger: 'blur' }
+        ]
+      },
+
+      // 控制编辑参数对话框的显示与隐藏
+      editDialogVisible: false,
+
+      // 编辑参数 的表单绑定对象
+      editForm: {},
+
+      // 编辑参数 的表单的验证规则
+      editFormRules: {
         attr_name: [
           { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
@@ -230,8 +270,6 @@ export default {
         return this.$message.error('获取参数列表失败')
       }
 
-      console.log(res)
-
       if (this.activeName === 'many') {
         this.manyTabsData = res.data
       } else {
@@ -267,6 +305,75 @@ export default {
         this.getParamsData()
         this.addDialogVisible = false
       })
+    },
+
+    // 点击编辑按钮, 弹出编辑参数对话框
+    async showEditDialog(id) {
+      // 发起网络请求
+      const { data: res } = await this.$http.get(`categories/${this.getThreeCascaderId}/attributes/${id}`, {
+        params: {
+          attr_sel: this.activeName
+        }
+      })
+      console.log(res)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取参数失败')
+      }
+      // 成功获取参数,将其保存到 input 中
+      this.editForm = res.data
+      this.editDialogVisible = true
+    },
+
+    // 监听 编辑参数 弹出框的关闭事件
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
+
+    // 编辑参数,弹出框的确定事件
+    editParams() {
+      // 验证
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+
+        // 发起请求
+
+        const { data: res } = await this.$http.put(`categories/${this.getThreeCascaderId}/attributes/${this.editForm.attr_id}`,
+          {
+            attr_name: this.editForm.attr_name,
+            attr_sel: this.activeName
+          })
+        if (res.meta.status !== 200) {
+          return this.$message.error('编辑参数失败')
+        }
+        // 成功通知
+        this.$message.success('更新参数成功')
+        // 刷新列表
+        this.getParamsData()
+        // 关闭弹出框
+        this.editDialogVisible = false
+      })
+    },
+
+    // 点击删除按钮 根据id 删除对应的数据
+    async removeParamsById(id) {
+      // 弹窗提示
+      const result = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+
+      if (result !== 'confirm') {
+        this.$message.error('取消了删除操作')
+      }
+
+      // 发起网络请求
+      const { data: res } = await this.$http.delete(`categories/${this.getThreeCascaderId}/attributes/${id}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除属性失败')
+      }
+      // 刷新列表
+      this.getParamsData()
     }
   }
 
