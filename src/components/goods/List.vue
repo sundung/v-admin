@@ -22,7 +22,8 @@
           </el-input>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary">添加商品</el-button>
+          <el-button type="primary"
+                     @click="goToAddGoodsPage">添加商品</el-button>
         </el-col>
       </el-row>
       <!-- 商品表格 -->
@@ -53,7 +54,7 @@
                        icon="el-icon-edit"></el-button>
             <el-button type="danger"
                        size="mini"
-                       @click="romveById(scope.row.goods_id)"
+                       @click="romveGoodsById(scope.row.goods_id)"
                        icon="el-icon-delete"></el-button>
           </template>
         </el-table-column>
@@ -117,7 +118,7 @@ export default {
     },
 
     // 点击表格中的删除按钮,触发的事件
-    async romveById(id) {
+    async romveGoodsById(id) {
       // 弹窗提示
       const result = await this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -139,6 +140,11 @@ export default {
 
       // 刷新商品列表
       this.getGoodsList()
+    },
+
+    // 点击添加商品按钮,跳转到添加商品页面
+    goToAddGoodsPage() {
+      this.$router.push('/goods/add')
     }
   }
 }

@@ -18,6 +18,8 @@ import Cate from '../components//goods/Cate.vue'
 import Params from '../components//goods/Params.vue'
 // 导入商品管理下的商品列表页面
 import List from '../components//goods/List.vue'
+// 导入添加商品页面
+import AddGoods from '../components//goods/AddGoods.vue'
 
 Vue.use(VueRouter)
 
@@ -44,7 +46,8 @@ const routes = [
       { path: '/roles', component: Roles },
       { path: '/categories', component: Cate },
       { path: '/params', component: Params },
-      { path: '/goods', component: List }
+      { path: '/goods', component: List },
+      { path: '/goods/add', component: AddGoods }
     ]
   }
   // {
