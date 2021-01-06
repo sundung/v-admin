@@ -364,7 +364,7 @@ export default {
       }).catch(err => err)
 
       if (result !== 'confirm') {
-        this.$message.error('取消了删除操作')
+        return this.$message.error('取消了删除操作')
       }
 
       // 发起网络请求
