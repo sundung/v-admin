@@ -48,8 +48,9 @@
                 <!-- 循环渲染的 tag标签 -->
                 <el-tag type="primary"
                         closable
-                        v-for="item in scope.row.attr_vals"
-                        :key="item.attr_id">{{item}}</el-tag>
+                        v-for="(item,i) in scope.row.attr_vals"
+                        :key="item.attr_id"
+                        @close="handleTagClosedToRemoveById(i,scope.row)">{{item}}</el-tag>
                 <!-- 输入框 -->
                 <el-input class="input-new-tag"
                           v-if="scope.row.inputVisible"
@@ -97,7 +98,30 @@
                     border
                     stripe>
             <!-- 展开行 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <!-- 循环渲染的 tag标签 -->
+                <el-tag type="primary"
+                        closable
+                        v-for="(item,i) in scope.row.attr_vals"
+                        :key="item.attr_id"
+                        @close="handleTagClosedToRemoveById(i,scope.row)">{{item}}</el-tag>
+                <!-- 输入框 -->
+                <el-input class="input-new-tag"
+                          v-if="scope.row.inputVisible"
+                          v-model="scope.row.inputValue"
+                          ref="saveTagInput"
+                          size="small"
+                          @keyup.enter.native="handleInputConfirm(scope.row)"
+                          @blur="handleInputConfirm(scope.row)">
+                </el-input>
+                <!-- 添加按钮 -->
+                <el-button v-else
+                           class="button-new-tag"
+                           size="small"
+                           @click="showInput(scope.row)">+ New Tag</el-button>
+              </template>
+            </el-table-column>
             <!-- 索引行 -->
             <el-table-column type="index"></el-table-column>
             <el-table-column prop="attr_name"
@@ -418,6 +442,11 @@ export default {
       row.attr_vals.push(row.inputValue)
       row.inputValue = ''
       row.inputVisible = false
+      this.saveAttrVals(row)
+    },
+
+    // 将对 attr_vals(分类参数 tags标签的新增,删除) 的操作,保存到数据库中
+    async saveAttrVals(row) {
       // 发起网络请求
       const { data: res } = await this.$http.put(`categories/${this.getThreeCascaderId}/attributes/${row.attr_id}`, {
         attr_name: row.attr_name,
@@ -438,6 +467,12 @@ export default {
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
       })
+    },
+
+    // 点击tags 标签的 关闭事件,删除对应的参数
+    async handleTagClosedToRemoveById(i, row) {
+      row.attr_vals.splice(i, 1)
+      this.saveAttrVals(row)
     }
   }
 
