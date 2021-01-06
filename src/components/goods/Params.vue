@@ -43,7 +43,13 @@
                     border
                     stripe>
             <!-- 展开行 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <el-tag type="primary"
+                        v-for="item in scope.row.attr_vals"
+                        :key="item.attr_id">{{item}}</el-tag>
+              </template>
+            </el-table-column>
             <!-- 索引行 -->
             <el-table-column type="index"></el-table-column>
             <el-table-column prop="attr_name"
@@ -269,7 +275,11 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取参数列表失败')
       }
-
+      // 获取展开行的数据,渲染到页面中
+      res.data.map(item => {
+        item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+      })
+      console.log(res.data)
       if (this.activeName === 'many') {
         this.manyTabsData = res.data
       } else {
@@ -390,5 +400,8 @@ export default {
 }
 .el-cascader {
   width: 60%;
+}
+.el-tag {
+  margin-left: 10px;
 }
 </style>
