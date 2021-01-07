@@ -52,6 +52,7 @@
                          width="120px">
           <template>
             <el-button type="primary"
+                       @click="showEditAddress"
                        size="mini"
                        icon="el-icon-edit"></el-button>
             <el-button type="success"
@@ -69,10 +70,44 @@
                      :total="total">
       </el-pagination>
     </el-card>
+    <!-- 点击修改地址,弹出对话框 -->
+    <el-dialog title="提示"
+               :visible.sync="addressVisible"
+               @close="addressColsed"
+               width="60%">
+      <!-- 表单信息区域 -->
+      <el-form :model="addressForm"
+               :rules="addressFormRules"
+               ref="addressFormRef"
+               label-width="100px"
+               class="demo-ruleForm">
+        <el-form-item label="省市县/区"
+                      prop="address1">
+          <!-- 级联选择器 -->
+          <el-cascader :props="{ expandTrigger: 'hover' }"
+                       :options="cityData"
+                       v-model="addressForm.address1"
+                       @change="handleChange">
+          </el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址"
+                      prop="address2">
+          <el-input v-model="addressForm.address2"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="addressVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="addressVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+// 导入 省市县数据
+import cityData from './cityData.js'
 export default {
   data() {
     return {
@@ -90,7 +125,29 @@ export default {
       ordersList: [],
 
       // 总页数
-      total: 0
+      total: 0,
+
+      // 控制修改地址的弹出框的显示与隐藏
+      addressVisible: false,
+
+      // 修改地址 form 表单的绑定对象
+      addressForm: {
+        address1: [],
+        address2: ''
+      },
+
+      // 修改地址 form 表单的验证规则
+      addressFormRules: {
+        address1: [
+          { required: true, message: '请输入省市县区', trigger: 'blur' }
+        ],
+        address2: [
+          { required: true, message: '请输入详细地址', trigger: 'blur' }
+        ]
+      },
+
+      // 省市县数据
+      cityData
     }
   },
   created() {
@@ -117,6 +174,21 @@ export default {
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
       this.getOrderList()
+    },
+
+    // 点击修改地址按钮,弹出对话框
+    showEditAddress() {
+      this.addressVisible = true
+    },
+
+    // 省市县级联选择器的change 事件
+    handleChange() {
+
+    },
+
+    // 修改地址对话框关闭事件
+    addressColsed() {
+      this.$refs.addressFormRef.resetFields()
     }
   }
 }
