@@ -108,7 +108,8 @@
                        :on-preview="handlePreview"
                        :on-remove="handleRemove"
                        list-type="picture"
-                       :headers="headerObj">
+                       :headers="headerObj"
+                       :on-success="handleSuccess">
               <el-button size="small"
                          type="primary">点击上传</el-button>
               <div slot="tip"
@@ -138,7 +139,10 @@ export default {
         goods_weight: 0,
         goods_number: 0,
         // 级联选择器,所选择的商品分类,所组成的数组
-        goods_cat: []
+        goods_cat: [],
+
+        // 上传图片的临时路径
+        pics: []
       },
 
       // 添加商品表单绑定的验证规则对象
@@ -280,6 +284,14 @@ export default {
     // 图片删除时间
     handleRemove() {
 
+    },
+
+    // 图片上传成功的钩子函数
+    handleSuccess(res) {
+      // 获取图片上传的临时地址
+      const picInfo = { pic: res.data.tmp_path }
+      // 添加到 data 中的 addForm
+      this.addForm.pics.push(picInfo)
     }
   }
 }
