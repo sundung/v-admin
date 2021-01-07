@@ -281,9 +281,14 @@ export default {
 
     },
 
-    // 图片删除时间
-    handleRemove() {
-
+    // 图片删除事件
+    handleRemove(file) {
+      // 1.获取到图片的上传临时地址
+      const filePath = file.response.data.tmp_path
+      // 2.从 addForm 中的 pics 数组中查到 当前图片
+      const index = this.addForm.pics.findIndex(x => x.pic === filePath)
+      // 3.从 pics数组中删除对应的图片
+      this.addForm.pics.splice(index, 1)
     },
 
     // 图片上传成功的钩子函数
