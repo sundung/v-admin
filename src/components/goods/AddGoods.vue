@@ -161,7 +161,10 @@ export default {
         pics: [],
 
         // 商品介绍详情
-        goods_introduce: ''
+        goods_introduce: '',
+
+        // 后台需要的数据,数组
+        attrs: []
       },
 
       // 添加商品表单绑定的验证规则对象
@@ -329,7 +332,7 @@ export default {
 
     // 点击添加商品按钮,的事件处理函数
     add() {
-      this.$refs.addFormRef.validate(valid => {
+      this.$refs.addFormRef.validate(async valid => {
         if (!valid) {
           return this.$message.error('请填写必要的参数选项')
         }
@@ -338,7 +341,34 @@ export default {
         // 1.处理 goods_cat 数据的问题,级联选择器要求其必须是 数组,而,后台请求接口要求其以逗号分隔的字符串,使用loadash处理
         const form = _.cloneDeep(this.addForm)
         form.goods_cat = form.goods_cat.join(',')
-        console.log(form)
+        // 2.处理动态参数
+        this.manyTabsData.map(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+        // 3.处理静态属性
+        // 4.处理动态参数
+        this.onlyTabsData.map(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+        form.attrs = this.addForm.attrs
+        // 5.发起网路请求
+        const { data: res } = await this.$http.post('goods', form)
+        console.log(res)
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加商品失败')
+        }
+        console.log(res)
+        this.$message.success('添加商品成功')
+        // 6.跳转到商品列表页面
+        this.$router.push('/goods')
       })
     }
   }
