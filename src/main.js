@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import './plugins/element.js'
-
+// import './plugins/element.js'
+import ElementUI from 'element-ui'
+import locale from 'element-ui/lib/locale/lang/en'
+import 'element-ui/lib/theme-chalk/index.css'
 // 导入全局样式
 import './assets/styles/global.css'
 
@@ -18,8 +20,9 @@ import 'quill/dist/quill.bubble.css' // for bubble theme
 
 // 导入 axios
 import axios from 'axios'
-// axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
-axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
+
+axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
+// axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
 
 // 请求拦截器,携带 token
 axios.interceptors.request.use(config => {
@@ -29,7 +32,7 @@ axios.interceptors.request.use(config => {
 })
 
 Vue.prototype.$http = axios
-
+Vue.use(ElementUI, { locale })
 // 注册table 插件
 Vue.component('tree-table', TreeTable)
 

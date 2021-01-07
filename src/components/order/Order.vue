@@ -51,11 +51,14 @@
         <el-table-column label="操作"
                          width="120px">
           <template>
+            <!-- 修改地址按钮 -->
             <el-button type="primary"
                        @click="showEditAddress"
                        size="mini"
                        icon="el-icon-edit"></el-button>
+            <!-- 查看物流信息按钮 -->
             <el-button type="success"
+                       @click="showProcessVisible"
                        size="mini"
                        icon="el-icon-location"></el-button>
           </template></el-table-column>
@@ -102,6 +105,18 @@
                    @click="addressVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 物流信息的弹出框 -->
+    <el-dialog title="物流进度"
+               :visible.sync="processVisible"
+               width="60%">
+      <el-timeline>
+        <el-timeline-item v-for="(activity, index) in processInfo"
+                          :key="index"
+                          :timestamp="activity.time">
+          {{activity.context}}
+        </el-timeline-item>
+      </el-timeline>
+    </el-dialog>
   </div>
 </template>
 
@@ -147,7 +162,13 @@ export default {
       },
 
       // 省市县数据
-      cityData
+      cityData,
+
+      // 控制物流信息弹出框的显示与隐藏
+      processVisible: false,
+
+      // 物流信息的对象
+      processInfo: {}
     }
   },
   created() {
@@ -189,6 +210,17 @@ export default {
     // 修改地址对话框关闭事件
     addressColsed() {
       this.$refs.addressFormRef.resetFields()
+    },
+
+    // 点击查看物流进度按钮,弹出框事件
+    async  showProcessVisible() {
+      this.processVisible = true
+      // 发起网络请求
+      const { data: res } = await this.$http.get('/kuaidi/1106975712662')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取物流信息失败')
+      }
+      this.processInfo = res.data
     }
   }
 }
