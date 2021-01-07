@@ -102,7 +102,19 @@
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品图片"
-                       name="3">商品图片</el-tab-pane>
+                       name="3">
+            <el-upload class="upload-demo"
+                       :action="uploadPic"
+                       :on-preview="handlePreview"
+                       :on-remove="handleRemove"
+                       list-type="picture"
+                       :headers="headerObj">
+              <el-button size="small"
+                         type="primary">点击上传</el-button>
+              <div slot="tip"
+                   class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+          </el-tab-pane>
           <el-tab-pane label="商品内容"
                        name="4">商品内容</el-tab-pane>
         </el-tabs>
@@ -174,7 +186,15 @@ export default {
       manyTabsData: [],
 
       // 静态参数数据,数组
-      onlyTabsData: []
+      onlyTabsData: [],
+
+      // 图片上传地址
+      uploadPic: 'http://timemeetyou.com:8889/api/private/v1/upload',
+
+      // 图片上传组件的请求对象
+      headerObj: {
+        Authorization: window.sessionStorage.getItem('token')
+      }
     }
   },
   created() {
@@ -250,6 +270,16 @@ export default {
         this.onlyTabsData = res.data
         this.$message.success('获取商品属性成功')
       }
+    },
+
+    // 图片预览处理时间
+    handlePreview() {
+
+    },
+
+    // 图片删除时间
+    handleRemove() {
+
     }
   }
 }
