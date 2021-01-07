@@ -30,7 +30,7 @@
       <!-- form表单区域 -->
       <el-form :model="addForm"
                :rules="addFormRules"
-               ref="ruleFormRef"
+               ref="addFormRef"
                label-position="top"
                label-width="100px">
         <!-- tabs区域 -->
@@ -118,6 +118,10 @@
                        name="4">
             <!-- 富文本编辑器 -->
             <quill-editor v-model="addForm.goods_introduce"></quill-editor>
+            <!-- 添加商品按钮 -->
+            <el-button type="primary"
+                       style="margin-top:15px"
+                       @click="add">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -135,6 +139,8 @@
 </template>
 
 <script>
+// 导入 loadash 库
+import _ from 'lodash'
 export default {
   data() {
     return {
@@ -319,6 +325,21 @@ export default {
       const picInfo = { pic: res.data.tmp_path }
       // 添加到 data 中的 addForm
       this.addForm.pics.push(picInfo)
+    },
+
+    // 点击添加商品按钮,的事件处理函数
+    add() {
+      this.$refs.addFormRef.validate(valid => {
+        if (!valid) {
+          return this.$message.error('请填写必要的参数选项')
+        }
+
+        // 验证通过
+        // 1.处理 goods_cat 数据的问题,级联选择器要求其必须是 数组,而,后台请求接口要求其以逗号分隔的字符串,使用loadash处理
+        const form = _.cloneDeep(this.addForm)
+        form.goods_cat = form.goods_cat.join(',')
+        console.log(form)
+      })
     }
   }
 }
