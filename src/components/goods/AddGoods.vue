@@ -112,12 +112,13 @@
                        :on-success="handleSuccess">
               <el-button size="small"
                          type="primary">点击上传</el-button>
-              <div slot="tip"
-                   class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
           </el-tab-pane>
           <el-tab-pane label="商品内容"
-                       name="4">商品内容</el-tab-pane>
+                       name="4">
+            <!-- 富文本编辑器 -->
+            <quill-editor v-model="addForm.goods_introduce"></quill-editor>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
@@ -151,7 +152,10 @@ export default {
         goods_cat: [],
 
         // 上传图片的临时路径
-        pics: []
+        pics: [],
+
+        // 商品介绍详情
+        goods_introduce: ''
       },
 
       // 添加商品表单绑定的验证规则对象

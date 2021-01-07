@@ -9,6 +9,13 @@ import './assets/styles/global.css'
 // 导入 table 插件
 import TreeTable from 'vue-table-with-tree-grid'
 
+// 导入富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+
+import 'quill/dist/quill.core.css' // import styles
+import 'quill/dist/quill.snow.css' // for snow theme
+import 'quill/dist/quill.bubble.css' // for bubble theme
+
 // 导入 axios
 import axios from 'axios'
 // axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
@@ -25,6 +32,9 @@ Vue.prototype.$http = axios
 
 // 注册table 插件
 Vue.component('tree-table', TreeTable)
+
+// 注册富文本编辑器
+Vue.use(VueQuillEditor /* { default global options } */)
 
 // 注册一个全局过滤器,处理时间
 Vue.filter('dataFormat', function (originVal) {
