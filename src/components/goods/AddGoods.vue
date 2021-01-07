@@ -94,7 +94,13 @@
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品属性"
-                       name="2">商品属性</el-tab-pane>
+                       name="2">
+            <el-form-item :label="item.attr_name"
+                          v-for="item in onlyTabsData"
+                          :key="item.attr_id">
+              <el-input v-model="item.attr_vals"></el-input>
+            </el-form-item>
+          </el-tab-pane>
           <el-tab-pane label="商品图片"
                        name="3">商品图片</el-tab-pane>
           <el-tab-pane label="商品内容"
@@ -165,7 +171,10 @@ export default {
       },
 
       // 动态参数数据
-      manyTabsData: []
+      manyTabsData: [],
+
+      // 静态参数数据,数组
+      onlyTabsData: []
     }
   },
   created() {
@@ -228,6 +237,18 @@ export default {
         console.log(this.manyTabsData)
 
         this.$message.success('获取商品参数成功')
+      } else if (this.active === '2') {
+        // 发起网络请求
+        const { data: res } = await this.$http.get(`categories/${this.getThreeCateID}/attributes`, {
+          params: { sel: 'only' }
+        })
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取商品参数失败')
+        }
+
+        // 将数据保存到 data中的 onlyTabsData
+        this.onlyTabsData = res.data
+        this.$message.success('获取商品属性成功')
       }
     }
   }
