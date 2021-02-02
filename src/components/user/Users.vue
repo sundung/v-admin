@@ -293,6 +293,7 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取用户数据裂变失败')
       }
+      console.log(res)
       this.usersList = res.data.users
       this.total = res.data.total
     },

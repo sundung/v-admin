@@ -3,43 +3,39 @@
     <!-- 头部区域 -->
     <el-header>
       <div class="header-text">电商管理后台</div>
-      <el-button type="info" @click="handleOut">退出</el-button>
+      <el-button type="info"
+                 @click="handleOut">退出</el-button>
     </el-header>
     <!-- 页面主题区域 -->
     <el-container>
       <!-- 页面侧边栏区域 -->
       <el-aside :width="isCollaspe ? '64px' : '200px'">
         <!-- 折叠按钮 -->
-        <div class="toggle-button" @click="toggleCollapse">|||</div>
-        <el-menu
-          :default-active="activePath"
-          class="el-menu-vertical-demo"
-          background-color="#2d3f55"
-          text-color="#fff"
-          active-text-color="red"
-          unique-opened
-          :collapse="isCollaspe"
-          :collapse-transition="false"
-          router
-        >
+        <div class="toggle-button"
+             @click="toggleCollapse">|||</div>
+        <el-menu :default-active="activePath"
+                 class="el-menu-vertical-demo"
+                 background-color="#2d3f55"
+                 text-color="#fff"
+                 active-text-color="red"
+                 unique-opened
+                 :collapse="isCollaspe"
+                 :collapse-transition="false"
+                 router>
           <!-- 一级菜单 -->
-          <el-submenu
-            :index="item.id + ''"
-            v-for="item in menuList"
-            :key="item.id"
-          >
+          <el-submenu :index="item.id + ''"
+                      v-for="item in menuList"
+                      :key="item.id">
             <template slot="title">
               <!-- 循环设置一级菜单的图标 -->
               <i :class="iconsObj[item.id]"></i>
               <span>{{ item.authName }}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item
-              :index="'/' + subItem.path"
-              v-for="subItem in item.children"
-              :key="subItem.id"
-              @click="saveNavState('/' + subItem.path)"
-            >
+            <el-menu-item :index="'/' + subItem.path"
+                          v-for="subItem in item.children"
+                          :key="subItem.id"
+                          @click="saveNavState('/' + subItem.path)">
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 <span>{{ subItem.authName }}</span>
@@ -78,6 +74,7 @@ export default {
     }
   },
   created() {
+    console.log(this.$router.params)
     // 获取所有菜单
     this.getMenuList()
     // 获取高亮菜单项
